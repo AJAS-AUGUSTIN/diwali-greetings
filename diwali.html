@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Happy Diwali ✨</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: 'Segoe UI', sans-serif;
+      overflow-x: hidden;
+      color: white;
+      text-align: center;
+    }
+
+    /* 🎥 Background Video */
+    #backgroundVideo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -2;
+      display: block;
+    }
+
+    /* 🖼️ Fallback Image */
+    #backgroundFallback {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      z-index: -3;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: -1;
+    }
+
+    /* ✨ Greeting */
+    h1#greeting {
+      font-size: 3em;
+      margin-top: 90px;
+      text-shadow: 0 0 15px gold, 0 0 30px orange;
+      z-index: 10;
+      position: relative;
+      display: inline-block;
+      padding: 0 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 95vw; /* prevent text overflow */
+    }
+
+    /* 🪔 Responsive font adjustment */
+    @media (max-width: 600px) {
+      h1#greeting {
+        font-size: clamp(1.4em, 6vw, 2em);
+        margin-top: 60px;
+      }
+    }
+
+    /* 🌟 Lights */
+    .lights {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      padding: 15px 0;
+      z-index: 5;
+      flex-wrap: wrap;
+    }
+
+    .light {
+      width: 20px;
+      height: 20px;
+      background: gold;
+      border-radius: 50%;
+      box-shadow: 0 0 15px gold;
+      animation: glow 1.5s infinite alternate;
+    }
+    .light:nth-child(odd) { animation-delay: 0.5s; }
+
+    @keyframes glow {
+      0% { opacity: 0.4; transform: scale(1); box-shadow: 0 0 10px gold; }
+      100% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 25px orange; }
+    }
+
+    /* 📜 Message */
+    #message {
+      max-width: 700px;
+      margin: 20px auto;
+      line-height: 1.6;
+      background: rgba(0, 0, 0, 0.4);
+      padding: 15px;
+      border-radius: 10px;
+      font-size: 1.1em;
+      position: relative;
+      z-index: 10;
+    }
+
+    @media (max-width: 600px) {
+      #message { font-size: 1em; margin: 10px; padding: 10px; }
+    }
+
+    input {
+      padding: 10px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      width: 220px;
+      margin-bottom: 10px;
+      outline: none;
+      max-width: 90%;
+    }
+
+    button {
+      background-color: orange;
+      color: white;
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+      box-shadow: 0 0 10px orange;
+      transition: background 0.3s;
+    }
+
+    button:hover { background-color: darkorange; }
+
+    .share-link {
+      margin-top: 15px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+      word-break: break-all;
+    }
+
+    #fireworksCanvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <!-- 🖼️ Fallback Image -->
+  <img id="backgroundFallback" src="diwali.jpg" alt="Diwali Background">
+
+  <!-- 🌠 Background Video -->
+  <video id="backgroundVideo" autoplay muted loop playsinline>
+    <source src="diwali.mp4" type="video/mp4">
+    <!-- If video fails, image will be shown behind -->
+  </video>
+
+  <div id="overlay"></div>
+
+  <!-- 🎇 Fireworks -->
+  <canvas id="fireworksCanvas"></canvas>
+
+  <!-- 🌟 Lights -->
+  <div class="lights">
+    <div class="light"></div><div class="light"></div><div class="light"></div>
+    <div class="light"></div><div class="light"></div><div class="light"></div><div class="light"></div>
+  </div>
+
+  <!-- 🪔 Greeting -->
+  <h1 id="greeting">✨ Happy Diwali ✨</h1>
+
+  <!-- 📝 Message -->
+  <div id="message">
+    May this festival of lights bring joy, prosperity, and good health to you and your family. 
+    As the diyas light up your life, may all your dreams be illuminated with success, happiness, and love. 
+    Let the spirit of Diwali fill your heart with warmth and positivity.
+    <br><br>
+    Wishing you a season filled with joy, laughter, and unforgettable moments!
+  </div>
+
+  <!-- 📝 Name Section -->
+  <button onclick="toggleNameSection()">✨ Add Your Name</button>
+  <div id="nameSection" style="display:none;">
+    <input type="text" id="nameInput" placeholder="Enter your name" />
+    <br>
+    <button onclick="setName()">Set My Name</button>
+    <button onclick="generateLink()">Generate Share Link</button>
+    <button onclick="shareWhatsApp()">📲 Share on WhatsApp</button>
+    <div id="linkBox" class="share-link" style="display:none;"></div>
+  </div>
+
+  <!-- 📸 Credit-->
+  <button id="creditButton" 
+    style="position: fixed; bottom: 5px; right: 5px; 
+          background: rgba(0,0,0,0.6); 
+          color: gold; 
+          border: none; 
+          padding: 3px 8px; 
+          border-radius: 15px; 
+          cursor: pointer; 
+          font-size: 0.75em; 
+          z-index: 100;">
+    📸 Credits
+  </button>
+
+  <!-- 📜 Credit Box -->
+  <div id="creditBox" 
+    style="position: fixed; bottom: 50px; right: 10px; background: rgba(0,0,0,0.85); color: white; padding: 12px; border-radius: 12px; max-width: 270px; font-size: 0.85em; text-align: left; display: none; z-index: 100; box-shadow: 0 0 15px rgba(255,215,0,0.3);">
+    <strong style="color: rgb(158, 156, 147);">Media Credits:</strong><br>
+    🎥 Video from <a href="https://pixabay.com/videos/diwali-festival-lamp-indian-light-309626/
+    https://www.freepik.com/free-vector/" target="_blank" style="color: rgb(66, 66, 66);">Pixaby</a><br>
+    🖼️ Image from <a href="https://www.freepik.com/free-vector/happy-diwali-indian-traditional-festival-celebration-card-design_33148236.htm#fromView=keyword&page=1&position=26&uuid=6aa4b7cb-ad20-4434-af6b-8c90c53b1ff0&query=Diwali" target="_blank" style="color: rgb(88, 84, 84);">Freepik</a>
+    <hr style="border: 0; height: 1px; background: rgba(255,255,255,0.2); margin: 8px 0;">
+    <strong style="color: gold;">Created by:</strong><br>
+    <span id="creatorName">Ajas Augustin</span><br>
+    <!-- <div id="socialLinks" style="margin-top: 5px;">
+      <a href="https://github.com/yourusername" target="_blank" style="color: gold; text-decoration: none;">🐙 GitHub</a><br>
+      <a href="https://instagram.com/yourhandle" target="_blank" style="color: gold; text-decoration: none;">📸 Instagram</a><br>
+      <a href="https://twitter.com/yourhandle" target="_blank" style="color: gold; text-decoration: none;">🐦 X (Twitter)</a>
+    </div> -->
+  </div>
+
+
+
+  <script>
+    // 🪔 Get name from URL
+    function getQueryParam(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(param);
+    }
+
+    const greetingEl = document.getElementById("greeting");
+    const receivedName = getQueryParam("name");
+
+    if (receivedName) {
+      greetingEl.textContent = `✨ Happy Diwali from ${receivedName} ✨`;
+      document.getElementById("nameInput").value = receivedName;
+      adjustFontSize();
+    }
+
+    function toggleNameSection() {
+      const section = document.getElementById("nameSection");
+      section.style.display = section.style.display === "none" ? "block" : "none";
+    }
+
+    function setName() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (name) {
+        greetingEl.textContent = `✨ Happy Diwali from ${name} ✨`;
+        adjustFontSize();
+      }
+    }
+
+    function generateLink() {
+      const name = document.getElementById("nameInput").value.trim();
+      if (!name) return alert("Please enter your name first.");
+      const baseURL = window.location.origin + window.location.pathname;
+      const shareLink = `${baseURL}?name=${encodeURIComponent(name)}`;
+      const linkBox = document.getElementById("linkBox");
+      linkBox.style.display = "block";
+      linkBox.innerHTML = `<strong>Share this link:</strong><br><a href="${shareLink}" target="_blank">${shareLink}</a>`;
+    }
+
+    function shareWhatsApp() {
+      const name = document.getElementById("nameInput").value.trim();
+      const baseURL = window.location.origin + window.location.pathname;
+      const shareLink = `${baseURL}?name=${encodeURIComponent(name || "Friend")}`;
+
+      const message = `🪔 Happy Diwali from ${name || "me"} 🪔
+
+May this festival of lights bring joy, prosperity, and good health to you and your family. 
+As the diyas light up your life, may all your dreams be illuminated with success, happiness, and love. 
+Let the spirit of Diwali fill your heart with warmth and positivity.
+
+Wishing you a season filled with joy, laughter, and unforgettable moments!
+
+👉 Tap here: ${shareLink}`;
+
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, '_blank');
+    }
+
+    // 📏 Adjust greeting font size for long names
+    function adjustFontSize() {
+      const el = greetingEl;
+      const maxWidth = window.innerWidth * 0.95;
+      let fontSize = parseFloat(window.getComputedStyle(el).fontSize);
+      while (el.scrollWidth > maxWidth && fontSize > 14) {
+        fontSize -= 1;
+        el.style.fontSize = fontSize + "px";
+      }
+    }
+
+    // 🎇 Fireworks Animation
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      adjustFontSize();
+    });
+
+    const particles = [];
+    function createFirework(x, y) {
+      for (let i = 0; i < 50; i++) {
+        const angle = Math.random() * 2 * Math.PI;
+        const speed = Math.random() * 5 + 2;
+        particles.push({
+          x, y,
+          vx: Math.cos(angle) * speed,
+          vy: Math.sin(angle) * speed,
+          alpha: 1,
+          color: `hsl(${Math.random() * 360}, 100%, 60%)`
+        });
+      }
+    }
+
+    function updateFireworks() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.05;
+        p.alpha -= 0.01;
+        if (p.alpha <= 0) {
+          particles.splice(i, 1);
+          continue;
+        }
+        ctx.globalAlpha = p.alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    }
+
+    setInterval(() => {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height / 2;
+      createFirework(x, y);
+    }, 800);
+
+    (function animate() {
+      updateFireworks();
+      requestAnimationFrame(animate);
+    })();
+
+
+    // 📸 Toggle Credits Box
+    const creditButton = document.getElementById('creditButton');
+    const creditBox = document.getElementById('creditBox');
+
+    creditButton.addEventListener('click', () => {
+      if (creditBox.style.display === 'none' || creditBox.style.display === '') {
+        creditBox.style.display = 'block';
+      } else {
+        creditBox.style.display = 'none';
+      }
+    });
+
+    // Optional: Click outside to close
+    document.addEventListener('click', (e) => {
+      if (!creditBox.contains(e.target) && !creditButton.contains(e.target)) {
+        creditBox.style.display = 'none';
+      }
+    });
+
+  </script>
+</body>
+</html>
